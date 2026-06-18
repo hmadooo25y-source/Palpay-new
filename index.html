@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إكس أو الفاخرة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt: #0E3D2C;
+    --felt-deep: #082921;
+    --ivory: #F6F1E4;
+    --ivory-2: #ECE3CB;
+    --ivory-3: #E3D7B4;
+    --ink: #241D17;
+    --ink-soft: #4B4234;
+    --brass: #B8893E;
+    --brass-light: #E7C77B;
+    --burgundy: #7A1F2B;
+    --burgundy-light: #A23B46;
+    --shadow: rgba(8, 30, 22, 0.45);
+    --font-display: 'Aref Ruqaa', serif;
+    --font-body: 'Tajawal', sans-serif;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html,body{
+    margin:0;
+    min-height:100vh;
+    font-family: var(--font-body);
+    color: var(--ink);
+  }
+
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 14px;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(231,199,123,0.10), transparent 55%),
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 2px, transparent 2px, transparent 6px),
+      radial-gradient(circle at 50% 50%, var(--felt) 0%, var(--felt-deep) 100%);
+    background-attachment: fixed;
+  }
+
+  .stage{
+    position: relative;
+    width: min(92vw, 440px);
+    background: var(--ivory);
+    border-radius: 26px;
+    padding: clamp(20px, 5vw, 36px) clamp(18px, 5vw, 32px) 26px;
+    box-shadow:
+      0 30px 60px var(--shadow),
+      0 0 0 1px rgba(184,137,62,0.35),
+      inset 0 0 0 6px rgba(184,137,62,0.12);
+  }
+
+  .corner{
+    position:absolute;
+    width: 34px;
+    height: 34px;
+    color: var(--brass);
+    opacity: 0.85;
+  }
+  .corner--tl{ top:12px; right:12px; }
+  .corner--tr{ top:12px; left:12px; transform: scaleX(-1); }
+  .corner--bl{ bottom:12px; right:12px; transform: scaleY(-1); }
+  .corner--br{ bottom:12px; left:12px; transform: scale(-1,-1); }
+
+  .header{
+    text-align:center;
+    margin-bottom: 18px;
+  }
+  .title{
+    margin:0;
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 8vw, 2.7rem);
+    color: var(--burgundy);
+    letter-spacing: 1px;
+  }
+  .title .x-part{ color: var(--burgundy); }
+  .title .o-part{ color: var(--brass); }
+  .title .divider{
+    color: var(--ink-soft);
+    font-size: 0.65em;
+    margin: 0 6px;
+    vertical-align: middle;
+  }
+  .tagline{
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+
+  .mode-bar{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .mode-btn{
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 9px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--brass);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, transform .15s ease;
+  }
+  .mode-btn:hover{ transform: translateY(-1px); }
+  .mode-btn.active{
+    background: var(--brass);
+    color: var(--ivory);
+    box-shadow: 0 4px 12px rgba(184,137,62,0.35);
+  }
+  .difficulty{
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 9px 14px;
+    border-radius: 999px;
+    border: 1.5px solid var(--ivory-3);
+    background: var(--ivory-2);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .difficulty[hidden]{ display:none; }
+
+  .scoreboard{
+    display:grid;
+    grid-template-columns: 1fr 0.8fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .score-card{
+    text-align:center;
+    padding: 10px 4px;
+    border-radius: 14px;
+    background: var(--ivory-2);
+    border: 1.5px solid transparent;
+    transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+  }
+  .score-card.active{
+    border-color: var(--brass-light);
+    box-shadow: 0 0 0 3px rgba(231,199,123,0.25);
+    transform: translateY(-2px);
+  }
+  .score-card.win-pulse{
+    animation: pulse 0.9s ease infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(231,199,123,0.45); }
+    50%{ box-shadow: 0 0 0 6px rgba(231,199,123,0.0); }
+  }
+  .score-label{
+    display:block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    margin-bottom: 2px;
+  }
+  .score-x .score-label{ color: var(--burgundy); }
+  .score-o .score-label{ color: var(--brass); }
+  .score-value{
+    display:block;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+
+  .status{
+    text-align:center;
+    margin: 4px 0 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    min-height: 1.4em;
+  }
+  .status.status--win{ color: var(--burgundy); }
+  .status.win-o{ color: #8a6418; }
+  .status.status--draw{ color: var(--ink-soft); }
+
+  .board-wrap{
+    position: relative;
+    width: min(78vw, 320px);
+    margin: 0 auto;
+  }
+  .board{
+    position: relative;
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 4px;
+    padding: 4px;
+    background: var(--brass);
+    border-radius: 18px;
+    aspect-ratio: 1 / 1;
+    box-shadow: 0 14px 28px rgba(8,30,22,0.25);
+  }
+  .cell{
+    background: var(--ivory-2);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 14%;
+    transition: background .15s ease;
+  }
+  .cell:disabled{ cursor: default; }
+  .cell:not(:disabled):hover{ background: var(--ivory-3); }
+  .cell:focus-visible{
+    outline: 3px solid var(--brass-light);
+    outline-offset: 2px;
+  }
+  .cell.cell--win{
+    background: var(--brass-light);
+  }
+  .cell svg{ width: 100%; height: 100%; display:block; }
+
+  .mark-x line{
+    stroke: var(--burgundy);
+    stroke-width: 11;
+    stroke-linecap: round;
+    stroke-dasharray: 85;
+    stroke-dashoffset: 85;
+    animation: drawMark .32s ease-out forwards;
+  }
+  .mark-o circle{
+    stroke: var(--brass);
+    stroke-width: 10;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 201;
+    stroke-dashoffset: 201;
+    animation: drawMark .38s ease-out forwards;
+  }
+  @keyframes drawMark{ to{ stroke-dashoffset: 0; } }
+
+  .win-line{
+    position:absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .win-line line{
+    stroke: var(--burgundy-light);
+    stroke-width: 3.2;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(231,199,123,0.7));
+  }
+
+  .controls{
+    display:flex;
+    justify-content:center;
+    gap: 10px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+  }
+  .btn{
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 0.88rem;
+    padding: 11px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover{ transform: translateY(-1px); }
+  .btn-primary{
+    border: none;
+    background: linear-gradient(135deg, var(--brass-light), var(--brass));
+    color: var(--ink);
+    box-shadow: 0 6px 16px rgba(184,137,62,0.4);
+  }
+  .btn-ghost{
+    border: 1.5px solid var(--burgundy);
+    background: transparent;
+    color: var(--burgundy);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark-x line, .mark-o circle, .score-card.win-pulse, .btn, .mode-btn{
+      animation: none !important;
+      transition: none !important;
+    }
+    .mark-x line, .mark-o circle{ stroke-dashoffset: 0 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <svg class="corner corner--tl" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M4 36 C4 18 18 4 36 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="36" cy="4" r="2.6" fill="currentColor"/>
+    <circle cx="4" cy="36" r="2" fill="currentColor"/>
+  </svg>
+  <svg class="corner corner--tr" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M4 36 C4 18 18 4 36 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="36" cy="4" r="2.6" fill="currentColor"/>
+    <circle cx="4" cy="36" r="2" fill="currentColor"/>
+  </svg>
+  <svg class="corner corner--bl" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M4 36 C4 18 18 4 36 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="36" cy="4" r="2.6" fill="currentColor"/>
+    <circle cx="4" cy="36" r="2" fill="currentColor"/>
+  </svg>
+  <svg class="corner corner--br" viewBox="0 0 40 40" aria-hidden="true">
+    <path d="M4 36 C4 18 18 4 36 4" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <circle cx="36" cy="4" r="2.6" fill="currentColor"/>
+    <circle cx="4" cy="36" r="2" fill="currentColor"/>
+  </svg>
+
+  <header class="header">
+    <h1 class="title"><span class="x-part">إكس</span><span class="divider">×</span><span class="o-part">أو</span></h1>
+    <p class="tagline">نسخة فاخرة من أعرق لعبة في العالم</p>
+  </header>
+
+  <div class="mode-bar" role="group" aria-label="اختيار نمط اللعب">
+    <button class="mode-btn active" data-mode="friend" type="button">مع صديق</button>
+    <button class="mode-btn" data-mode="computer" type="button">مع الكمبيوتر</button>
+    <select class="difficulty" id="difficulty" hidden aria-label="مستوى صعوبة الكمبيوتر">
+      <option value="easy">سهل</option>
+      <option value="hard" selected>صعب</option>
+    </select>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-card score-x active" id="scoreX">
+      <span class="score-label">اللاعب X</span>
+      <span class="score-value" id="scoreXValue">0</span>
+    </div>
+    <div class="score-card score-draw" id="scoreDraw">
+      <span class="score-label">تعادل</span>
+      <span class="score-value" id="scoreDrawValue">0</span>
+    </div>
+    <div class="score-card score-o" id="scoreO">
+      <span class="score-label">اللاعب O</span>
+      <span class="score-value" id="scoreOValue">0</span>
+    </div>
+  </div>
+
+  <p class="status" id="status" aria-live="polite">دور اللاعب: X</p>
+
+  <div class="board-wrap">
+    <div class="board" id="board" role="grid" aria-label="رقعة اللعب"></div>
+    <svg class="win-line" id="winLine" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      <line id="winLineEl" x1="0" y1="0" x2="0" y2="0" />
+    </svg>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary" id="newRoundBtn" type="button">جولة جديدة</button>
+    <button class="btn btn-ghost" id="resetAllBtn" type="button">إعادة كل شيء</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var WIN_PATTERNS = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  var SVG_X = '<svg viewBox="0 0 100 100" class="mark-x"><line x1="22" y1="22" x2="78" y2="78"/><line x1="78" y1="22" x2="22" y2="78"/></svg>';
+  var SVG_O = '<svg viewBox="0 0 100 100" class="mark-o"><circle cx="50" cy="50" r="32"/></svg>';
+
+  var state = {
+    board: Array(9).fill(null),
+    current: 'X',
+    mode: 'friend',
+    difficulty: 'hard',
+    scores: { X: 0, O: 0, draw: 0 },
+    gameOver: false,
+    locked: false
+  };
+
+  var boardEl = document.getElementById('board');
+  var statusEl = document.getElementById('status');
+  var winLineEl = document.getElementById('winLineEl');
+  var difficultyEl = document.getElementById('difficulty');
+  var scoreXCard = document.getElementById('scoreX');
+  var scoreOCard = document.getElementById('scoreO');
+  var scoreDrawCard = document.getElementById('scoreDraw');
+  var scoreXValue = document.getElementById('scoreXValue');
+  var scoreOValue = document.getElementById('scoreOValue');
+  var scoreDrawValue = document.getElementById('scoreDrawValue');
+  var cells = [];
+
+  function buildBoard(){
+    boardEl.innerHTML = '';
+    cells = [];
+    for(var i=0;i<9;i++){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cell';
+      btn.dataset.index = i;
+      btn.setAttribute('aria-label', 'خلية ' + (i+1) + '، فارغة');
+      btn.addEventListener('click', handleCellClick);
+      boardEl.appendChild(btn);
+      cells.push(btn);
+    }
+  }
+
+  function cellCenter(i){
+    var col = i % 3, row = Math.floor(i / 3);
+    return { x: col * 33.34 + 16.66, y: row * 33.34 + 16.66 };
+  }
+
+  function checkWinner(board){
+    for(var p=0;p<WIN_PATTERNS.length;p++){
+      var a = WIN_PATTERNS[p][0], b = WIN_PATTERNS[p][1], c = WIN_PATTERNS[p][2];
+      if(board[a] && board[a] === board[b] && board[b] === board[c]){
+        return { winner: board[a], pattern: WIN_PATTERNS[p] };
+      }
+    }
+    return null;
+  }
+
+  function isFull(board){
+    for(var i=0;i<9;i++){ if(!board[i]) return false; }
+    return true;
+  }
+
+  function handleCellClick(e){
+    var index = parseInt(e.currentTarget.dataset.index, 10);
+    if(state.gameOver || state.locked || state.board[index]) return;
+    doMove(index, state.current);
+  }
+
+  function doMove(index, player){
+    state.board[index] = player;
+    renderCell(index, player);
+
+    var result = checkWinner(state.board);
+    if(result){ endGame(result); return; }
+    if(isFull(state.board)){ endGame(null); return; }
+
+    state.current = (player === 'X') ? 'O' : 'X';
+    updateStatus();
+    updateActiveCard();
+
+    if(state.mode === 'computer' && state.current === 'O'){
+      state.locked = true;
+      statusEl.textContent = 'الكمبيوتر يفكر...';
+      setTimeout(function(){
+        aiMove();
+        state.locked = false;
+      }, 450);
+    }
+  }
+
+  function renderCell(index, player){
+    var cell = cells[index];
+    cell.disabled = true;
+    cell.setAttribute('aria-label', 'خلية ' + (index+1) + '، تحتوي على ' + player);
+    cell.innerHTML = player === 'X' ? SVG_X : SVG_O;
+  }
+
+  function aiMove(){
+    if(state.gameOver) return;
+    var idx;
+    if(state.difficulty === 'easy'){
+      var empties = [];
+      for(var i=0;i<9;i++){ if(!state.board[i]) empties.push(i); }
+      idx = empties[Math.floor(Math.random() * empties.length)];
+    } else {
+      idx = bestMove(state.board);
+    }
+    doMove(idx, 'O');
+  }
+
+  function minimax(board, depth, isMax){
+    var result = checkWinner(board);
+    if(result){ return result.winner === 'O' ? (10 - depth) : (depth - 10); }
+    if(isFull(board)) return 0;
+
+    if(isMax){
+      var best = -Infinity;
+      for(var i=0;i<9;i++){
+        if(!board[i]){
+          board[i] = 'O';
+          best = Math.max(best, minimax(board, depth+1, false));
+          board[i] = null;
+        }
+      }
+      return best;
+    } else {
+      var worst = Infinity;
+      for(var j=0;j<9;j++){
+        if(!board[j]){
+          board[j] = 'X';
+          worst = Math.min(worst, minimax(board, depth+1, true));
+          board[j] = null;
+        }
+      }
+      return worst;
+    }
+  }
+
+  function bestMove(board){
+    var bestScore = -Infinity, move = null;
+    for(var i=0;i<9;i++){
+      if(!board[i]){
+        board[i] = 'O';
+        var score = minimax(board, 0, false);
+        board[i] = null;
+        if(score > bestScore){ bestScore = score; move = i; }
+      }
+    }
+    return move;
+  }
+
+  function endGame(result){
+    state.gameOver = true;
+    for(var i=0;i<9;i++){ cells[i].disabled = true; }
+
+    if(result){
+      state.scores[result.winner]++;
+      drawWinLine(result.pattern);
+      highlightWinCells(result.pattern);
+      statusEl.textContent = '🎉 فاز اللاعب ' + result.winner + '!';
+      statusEl.className = 'status status--win' + (result.winner === 'O' ? ' win-o' : '');
+      setActiveCard(result.winner === 'X' ? scoreXCard : scoreOCard, true);
+    } else {
+      state.scores.draw++;
+      statusEl.textContent = 'تعادل! لا فائز هذه الجولة';
+      statusEl.className = 'status status--draw';
+      setActiveCard(scoreDrawCard, true);
+    }
+    updateScoreDisplay();
+  }
+
+  function drawWinLine(pattern){
+    var start = cellCenter(pattern[0]);
+    var end = cellCenter(pattern[2]);
+    var len = Math.hypot(end.x - start.x, end.y - start.y);
+
+    winLineEl.setAttribute('x1', start.x);
+    winLineEl.setAttribute('y1', start.y);
+    winLineEl.setAttribute('x2', end.x);
+    winLineEl.setAttribute('y2', end.y);
+    winLineEl.style.transition = 'none';
+    winLineEl.style.strokeDasharray = len;
+    winLineEl.style.strokeDashoffset = len;
+
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        winLineEl.style.transition = 'stroke-dashoffset .5s ease-out';
+        winLineEl.style.strokeDashoffset = 0;
+      });
+    });
+  }
+
+  function highlightWinCells(pattern){
+    pattern.forEach(function(i){ cells[i].classList.add('cell--win'); });
+  }
+
+  function updateStatus(){
+    statusEl.className = 'status';
+    statusEl.textContent = 'دور اللاعب: ' + state.current;
+  }
+
+  function updateActiveCard(){
+    setActiveCard(state.current === 'X' ? scoreXCard : scoreOCard, false);
+  }
+
+  function setActiveCard(card, pulse){
+    [scoreXCard, scoreOCard, scoreDrawCard].forEach(function(c){
+      c.classList.remove('active', 'win-pulse');
+    });
+    card.classList.add('active');
+    if(pulse) card.classList.add('win-pulse');
+  }
+
+  function updateScoreDisplay(){
+    scoreXValue.textContent = state.scores.X;
+    scoreOValue.textContent = state.scores.O;
+    scoreDrawValue.textContent = state.scores.draw;
+  }
+
+  function clearWinLine(){
+    winLineEl.style.transition = 'none';
+    winLineEl.style.strokeDasharray = '0';
+    winLineEl.style.strokeDashoffset = '0';
+    winLineEl.setAttribute('x1', 0);
+    winLineEl.setAttribute('y1', 0);
+    winLineEl.setAttribute('x2', 0);
+    winLineEl.setAttribute('y2', 0);
+  }
+
+  function newRound(){
+    state.board = Array(9).fill(null);
+    state.current = 'X';
+    state.gameOver = false;
+    state.locked = false;
+    buildBoard();
+    clearWinLine();
+    updateStatus();
+    setActiveCard(scoreXCard, false);
+  }
+
+  function resetAll(){
+    state.scores = { X: 0, O: 0, draw: 0 };
+    updateScoreDisplay();
+    newRound();
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var mode = btn.dataset.mode;
+      if(mode === state.mode) return;
+      state.mode = mode;
+      document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      difficultyEl.hidden = (mode !== 'computer');
+      newRound();
+    });
+  });
+
+  difficultyEl.addEventListener('change', function(){
+    state.difficulty = difficultyEl.value;
+  });
+
+  document.getElementById('newRoundBtn').addEventListener('click', newRound);
+  document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+
+  buildBoard();
+  updateScoreDisplay();
+})();
+</script>
+</body>
+</html>
